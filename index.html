@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<title>Groq Chat</title>
+<style>
+body {
+  font-family: system-ui;
+  background: #f4f6f8;
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+}
+.chat {
+  width: 420px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,.1);
+}
+.header {
+  background: #ffcc00;
+  padding: 12px;
+  font-weight: bold;
+  text-align: center;
+}
+.messages {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+}
+.msg {
+  margin-bottom: 10px;
+}
+.user { text-align: right; }
+.user span {
+  background: #d1ecf1;
+}
+.ai span {
+  background: #eee;
+}
+.msg span {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+.input {
+  display: flex;
+  border-top: 1px solid #ddd;
+}
+input {
+  flex: 1;
+  border: none;
+  padding: 10px;
+}
+button {
+  border: none;
+  background: #ffcc00;
+  padding: 10px 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="chat">
+  <div class="header">🤖 Groq Chat</div>
+  <div id="messages" class="messages"></div>
+  <div class="input">
+    <input id="input" placeholder="Nhập tin nhắn..." />
+    <button onclick="send()">Send</button>
+  </div>
+</div>
+
+<script>
+const messagesDiv = document.getElementById("messages");
+const input = document.getElementById("input");
+
+let history = [
+  { role: "system", content: "You are a helpful assistant." }
+];
+
+function addMessage(role, text) {
+  const div = document.createElement("div");
+  div.className = "msg " + (role === "user" ? "user" : "ai");
+  div.innerHTML = `<span>${text}</span>`;
+  messagesDiv.appendChild(div);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+async function send() {
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = "";
+  addMessage("user", text);
+
+  history.push({ role: "user", content: text });
+
+  const res = await fetch("http://localhost:3000/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ messages: history })
+  });
+
+  const data = await res.json();
+  const reply = data.choices[0].message.content;
+
+  history.push({ role: "assistant", content: reply });
+  addMessage("ai", reply);
+}
+
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter") send();
+});
+</script>
+
+</body>
+</html>
