@@ -1,122 +1,52 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8" />
-<title>Groq Chat</title>
-<style>
-body {
-  font-family: system-ui;
-  background: #f4f6f8;
-  display: flex;
-  justify-content: center;
-  height: 100vh;
-}
-.chat {
-  width: 420px;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,.1);
-}
-.header {
-  background: #ffcc00;
-  padding: 12px;
-  font-weight: bold;
-  text-align: center;
-}
-.messages {
-  flex: 1;
-  padding: 12px;
-  overflow-y: auto;
-}
-.msg {
-  margin-bottom: 10px;
-}
-.user { text-align: right; }
-.user span {
-  background: #d1ecf1;
-}
-.ai span {
-  background: #eee;
-}
-.msg span {
-  display: inline-block;
-  padding: 8px 12px;
-  border-radius: 12px;
-}
-.input {
-  display: flex;
-  border-top: 1px solid #ddd;
-}
-input {
-  flex: 1;
-  border: none;
-  padding: 10px;
-}
-button {
-  border: none;
-  background: #ffcc00;
-  padding: 10px 16px;
-  font-weight: bold;
-  cursor: pointer;
-}
-</style>
+  <meta charset="UTF-8" />
+  <title>Groq Chat App</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<div class="chat">
-  <div class="header">🤖 Groq Chat</div>
-  <div id="messages" class="messages"></div>
-  <div class="input">
-    <input id="input" placeholder="Nhập tin nhắn..." />
-    <button onclick="send()">Send</button>
-  </div>
+<div class="app">
+
+  <!-- LEFT: NAVIGATION -->
+  <aside class="sidebar">
+    <h2>Groq Models</h2>
+
+    <ul id="modelList">
+      <li class="active" data-model="llama-3.1-8b-instant">LLaMA 3.1 8B (Fast)</li>
+      <li data-model="groq/compound">Groq Compound</li>
+      <li data-model="groq/compound-mini">Groq Compound Mini</li>
+      <li data-model="meta-llama/llama-4-maverick-17b-128e-instruct">LLaMA 4 Maverick 17B</li>
+      <li data-model="meta-llama/llama-4-scout-17b-16e-instruct">LLaMA 4 Scout 17B</li>
+      <li data-model="meta-llama/llama-guard-4-12b">LLaMA Guard 4 12B</li>
+      <li data-model="meta-llama/llama-prompt-guard-2-22m">LLaMA Prompt Guard 2 22M</li>
+      <li data-model="meta-llama/llama-prompt-guard-2-86m">LLaMA Prompt Guard 2 86M</li>
+      <li data-model="openai/gpt-oss-120b">GPT-OSS 120B</li>
+      <li data-model="openai/gpt-oss-safeguard-20b">GPT-OSS Safeguard 20B</li>
+      <li data-model="openai/gpt-oss-20b">GPT-OSS 20B</li>
+      <li data-model="qwen/qwen3-32b">Qwen 32B</li>
+      <li data-model="whisper-large-v3">Whisper Large V3</li>
+      <li data-model="whisper-large-v3-turbo">Whisper Large V3 Turbo</li>
+    </ul>
+  </aside>
+
+  <!-- RIGHT: CHAT -->
+  <main class="chat-area">
+    <div id="chatBox" class="chat-box"></div>
+
+    <div class="input-area">
+      <textarea
+        id="messageInput"
+        placeholder="Nhập tin nhắn..."
+        rows="1"
+      ></textarea>
+      <button id="sendBtn">Send</button>
+    </div>
+  </main>
+
 </div>
 
-<script>
-const messagesDiv = document.getElementById("messages");
-const input = document.getElementById("input");
-
-let history = [
-  { role: "system", content: "You are a helpful assistant." }
-];
-
-function addMessage(role, text) {
-  const div = document.createElement("div");
-  div.className = "msg " + (role === "user" ? "user" : "ai");
-  div.innerHTML = `<span>${text}</span>`;
-  messagesDiv.appendChild(div);
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
-
-async function send() {
-  const text = input.value.trim();
-  if (!text) return;
-
-  input.value = "";
-  addMessage("user", text);
-
-  history.push({ role: "user", content: text });
-
-  const res = await fetch("http://localhost:3000/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages: history })
-  });
-
-  const data = await res.json();
-  const reply = data.choices[0].message.content;
-
-  history.push({ role: "assistant", content: reply });
-  addMessage("ai", reply);
-}
-
-input.addEventListener("keydown", e => {
-  if (e.key === "Enter") send();
-});
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
