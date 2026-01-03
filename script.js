@@ -50,7 +50,7 @@ async function send() {
   const text = input.value.trim();
   if (!text) return;
 
-  appendMessage("user", text);
+  appendMessage("system", text);
   input.value = "";
   input.style.height = "auto";
 
