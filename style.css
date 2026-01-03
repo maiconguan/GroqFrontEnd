@@ -67,11 +67,18 @@ body {
   line-height: 1.4;
 }
 
+.innerMessage {
+  padding: 8px 12px;
+  box-sizing: border-box;
+}
+
+
 .message.user {
   background: #4f46e5;
   color: white;
   margin-left: auto;
   border-bottom-right-radius: 4px;
+  white-space: pre-wrap;
 }
 
 .message.ai {

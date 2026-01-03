@@ -41,7 +41,8 @@ input.addEventListener("keydown", e => {
 function appendMessage(role, content) {
   const div = document.createElement("div");
   div.className = `message ${role}`;
-  div.textContent = content;
+  //div.textContent = content;
+  div.innerHTML = `<div class="innerMessage">${content}</div>`;
   chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
@@ -50,11 +51,11 @@ async function send() {
   const text = input.value.trim();
   if (!text) return;
 
-  appendMessage("system", text);
+  appendMessage("user", text);
   input.value = "";
   input.style.height = "auto";
 
-  messages.push({ role: "user", content: text });
+  messages.push({ role: "system", content: text });
 
   const res = await fetch(API_URL, {
     method: "POST",
@@ -68,7 +69,9 @@ async function send() {
   const data = await res.json();
 
   const reply = data.choices?.[0]?.message?.content || "❌ Error";
-  appendMessage("ai", reply);
+
+    const htmlReply = marked.parse(reply);
+  appendMessage("ai", htmlReply);
 
   messages.push({ role: "assistant", content: reply });
 }
