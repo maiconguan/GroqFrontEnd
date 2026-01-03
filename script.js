@@ -6,6 +6,12 @@ const modelList = document.getElementById("modelList");
 let selectedModel = "llama-3.1-8b-instant";
 let messages = [];
 
+
+const API_URL = "https://groqbackend-production.up.railway.app/chat";
+// const API_URL = "http://localhost:3000/chat";
+
+
+
 /* MODEL SELECT */
 modelList.addEventListener("click", e => {
   if (e.target.tagName === "LI") {
@@ -50,7 +56,7 @@ async function send() {
 
   messages.push({ role: "user", content: text });
 
-  const res = await fetch("http://localhost:3000/chat", {
+  const res = await fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
