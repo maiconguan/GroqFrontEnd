@@ -70,7 +70,7 @@ async function send() {
 
   const reply = data.choices?.[0]?.message?.content || "❌ Error";
 
-    const htmlReply = marked.parse(reply);
+  const htmlReply = marked.parse(reply);
   appendMessage("ai", htmlReply);
 
   messages.push({ role: "assistant", content: reply });
